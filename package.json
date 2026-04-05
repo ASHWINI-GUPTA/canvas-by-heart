@@ -4,6 +4,7 @@
   "description": "Welcome to the project repository for **Canvas by Heart**! This guide will help you update the website content, add new paintings to the gallery, or even add video clips.",
   "main": "localization.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo No test available",
     "build": "echo No build required"
   },
