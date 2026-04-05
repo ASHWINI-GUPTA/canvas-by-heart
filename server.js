@@ -74,6 +74,10 @@ const authenticate = (req, res, next) => {
 
 // --- API Endpoints ---
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'I\'m alive 🙂, thanks for asking!', timestamp: new Date().toISOString() });
+});
+
 app.post('/api/login', (req, res) => {
   const { username, password } = req.body;
   if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
