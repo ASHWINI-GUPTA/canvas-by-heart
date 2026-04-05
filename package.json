@@ -1,0 +1,21 @@
+{
+  "name": "canvas-by-heart",
+  "version": "1.0.0",
+  "description": "Welcome to the project repository for **Canvas by Heart**! This guide will help you update the website content, add new paintings to the gallery, or even add video clips.",
+  "main": "localization.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.1024.0",
+    "better-sqlite3": "^12.8.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.0",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1"
+  }
+}
