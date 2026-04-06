@@ -32,6 +32,7 @@ async function initDynamicGallery() {
       item.type === 'video' 
         ? `<div class="carousel-slide" data-index="${index}" data-type="video" data-src="${item.image_url}">
              <video src="${item.image_url}" muted loop></video>
+             <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
              <div class="slide-title-overlay">${item.title}</div>
            </div>`
         : `<div class="carousel-slide" data-index="${index}" data-type="image" data-src="${item.image_url}">

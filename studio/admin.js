@@ -99,7 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const card = document.createElement('div');
       card.className = 'item-card';
       card.innerHTML = `
-        ${item.type === 'video' ? `<video src="${item.image_url}" class="item-img" controls></video>` : `<img src="${item.image_url}" alt="${item.title}" class="item-img" loading="lazy">`}
+        ${item.type === 'video' ? `
+          <div style="position: relative; overflow: hidden; border-radius: 8px 8px 0 0;">
+            <video src="${item.image_url}" class="item-img" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+            <div class="play-icon-overlay" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"><i class="fas fa-play"></i></div>
+          </div>` : `<img src="${item.image_url}" alt="${item.title}" class="item-img" loading="lazy">`}
         <div class="item-info">
           <h4 class="item-title">${item.title}</h4>
         </div>
