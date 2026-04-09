@@ -18,7 +18,7 @@
     href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Dancing+Script:wght@400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <script src="localization.js" defer></script>
 </head>
 
@@ -67,8 +67,71 @@
     </div>
   </section>
 
+  <!-- About Artist Section -->
+  <section id="about" class="section dark">
+    <div class="container">
+      <div class="title-decorative">
+        <div class="brush-stroke"></div>
+        <h2>About the Artist</h2>
+        <div class="brush-stroke"></div>
+      </div>
+      <div class="split split-reverse">
+        <div class="about-img gallery">
+          <img src="images/chanchal-in-public.png" alt="Chanchal Gupta" />
+        </div>
+        <div class="about-content">
+          <h3 class="artist-heading">Chanchal Gupta</h3>
+          <ul class="artist-metadata">
+            <li><strong>Born:</strong> 1971</li>
+            <li><strong>Hometown:</strong> Bhopal</li>
+            <li><strong>Based in:</strong> Indonesia</li>
+          </ul>
+
+          <p class="artist-bio">
+            Born in 1971 at Bhopal INDIA, originally textiles and apparel technologist and working in Apparel
+            Manufacturing plant in INDONESIA since 1998.
+          </p>
+
+          <p class="artist-bio">
+            A childhood full of trial of drawing and painting foreshadowed an artistic encouraged by self and
+            interpretation of heart voice on canvas as hobby causes abstract paint in canvas as collections.
+            Professionally I started painting 2012 onwards and my paintings are built up of many layers of ideas, each
+            idea creating its own flowing colors on surface of canvas which open for interpretation by the viewer.
+          </p>
+
+          <p class="artist-bio">
+            My subject matter is very close to the heart mainly due to the faith in traditional and abstract in modern
+            painting and also nature has been one of my biggest inspirations while I am doing an abstract painting or
+            feelings that pops in my mind, each painting is done with all the dedication and creativity that gets my
+            thoughts into the canvas.
+          </p>
+
+          <p class="artist-bio">
+            I use common materials for painting that is acrylic & oil paint with brush to capture movement and life
+            making the brush dance and the ideas sing. Everything is captured in the spontaneous dance and movement of
+            the brush as it meets the canvas. There for is on going back and correcting while painting is going on until
+            completed.
+          </p>
+
+          <p class="artist-bio">
+            <strong>CANVAS by heart</strong> painting Collections promotes our culture, aspirations, and environment -
+            by encouraging the pursuit of innovation and changes.
+          </p>
+
+          <p class="artist-bio">
+            In concert with progressive’s core values, the CANVAS by heart painting collections presents excellence in
+            artistic achievement under the work stress environment that encourages open-mindedness to what is unfamiliar
+            and different. Wholly committed to creativity and diversity in our corporate community. Art Collection as a
+            tool to spark rich dialogue about the ideas and concerns of our time, ultimately inspiring our people to
+            risk, learn, and grow.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- About Section -->
-  <section id="about" class="section">
+  <section id="about-art" class="section">
     <div class="container">
       <div class="title-decorative">
         <div class="brush-stroke"></div>
@@ -107,7 +170,6 @@
             diversity in our corporate community. Art collections as a tool to speak rich dialogue about the ideas and
             concerns of our time, ultimately inspiring our people to risk, learn, and grow.
           </p>
-          </p>
         </div>
         <div class="about-img gallery">
           <img src="images/chanchal.png" alt="Chanchal Gupta Portrait" />
@@ -123,15 +185,30 @@
       <h2 class="section-title" data-lang="selectedWorks">Selected Works</h2>
       <div class="brush-stroke"></div>
     </div>
-    <div class="carousel-container">
+
+    <!-- Images Section -->
+    <h3 class="gallery-subheading">Images</h3>
+    <div class="carousel-container" id="images-carousel">
       <button class="carousel-btn prev-btn"><i class="fa-solid fa-arrow-left"></i></button>
       <div class="carousel">
-        <div class="carousel-track" id="dynamic-carousel-track">
+        <div class="carousel-track" id="dynamic-carousel-track-images">
         </div>
       </div>
       <button class="carousel-btn next-btn"><i class="fa-solid fa-arrow-right"></i></button>
     </div>
-    <a class="cta" href="#contact" data-lang="reachOut">Reach Out</a>
+
+    <!-- Videos Section -->
+    <h3 class="gallery-subheading mt-4">Videos</h3>
+    <div class="carousel-container" id="videos-carousel">
+      <button class="carousel-btn prev-btn"><i class="fa-solid fa-arrow-left"></i></button>
+      <div class="carousel">
+        <div class="carousel-track" id="dynamic-carousel-track-videos">
+        </div>
+      </div>
+      <button class="carousel-btn next-btn"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <a class="cta gallery-cta" href="#contact" data-lang="reachOut">Reach Out</a>
   </section>
 
   <!-- Contact -->
@@ -142,7 +219,7 @@
         <p data-lang="contactDesc">Questions, commissions or a friendly hello—drop me a line.</p>
         <a href="mailto:hello@chanchalgupta.com">hello@chanchalgupta.com</a>
         <div class="social-links">
-          <a href="http://twitter.com/canvasbyheart" target="_blank" class="social-link">
+          <a href="http://x.com/canvasbyheart" target="_blank" class="social-link">
             <i class="fa-brands fa-x-twitter"></i>
           </a>
           <a href="http://fb.com/chanchal.gupta.589" target="_blank" class="social-link">

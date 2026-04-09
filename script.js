@@ -14,48 +14,59 @@ let slides = [];
 let slidesToShow = window.innerWidth <= 480 ? 1 : 3;
 
 async function initDynamicGallery() {
-  const track = document.getElementById('dynamic-carousel-track');
-  if (!track) return;
+  const imagesTrack = document.getElementById('dynamic-carousel-track-images');
+  const videosTrack = document.getElementById('dynamic-carousel-track-videos');
+  if (!imagesTrack || !videosTrack) return;
 
   try {
     const res = await fetch('/api/items');
     const items = await res.json();
 
     if (items.length === 0) {
-      track.innerHTML = '<p style="color: white; padding: 2rem;">No artworks found in the gallery.</p>';
+      imagesTrack.innerHTML = '<p class="gallery-error-msg">No artworks found in the gallery.</p>';
+      videosTrack.innerHTML = '<p class="gallery-error-msg">No artworks found in the gallery.</p>';
       return;
     }
 
-    // Populate track
-    track.innerHTML = items.map((item, index) =>
-      item.type === 'video'
-        ? `<div class="carousel-slide" data-index="${index}" data-type="video" data-src="${item.image_url}">
-             <div style="position: relative; overflow: hidden; border-radius: 8px 8px 0 0;">
-               <video src="${item.image_url}" class="item-img" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
-               <div class="play-icon-overlay" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"><i class="fas fa-play"></i></div>
-             </div>
-             <div class="slide-title-overlay">${item.title}</div>
-           </div>`
-        : `<div class="carousel-slide" data-index="${index}" data-type="image" data-src="${item.image_url}">
-             <img src="${item.image_url}" alt="${item.title}">
-             <div class="slide-title-overlay">${item.title}</div>
-           </div>`
+    const imageItems = items.filter(i => i.type !== 'video');
+    const videoItems = items.filter(i => i.type === 'video');
+
+    // Populate images track
+    imagesTrack.innerHTML = imageItems.map((item, index) =>
+      `<div class="carousel-slide" data-index="${index}" data-type="image" data-src="${item.image_url}">
+         <img src="${item.image_url}" alt="${item.title}">
+         <div class="slide-title-overlay">${item.title}</div>
+       </div>`
+    ).join('');
+
+    // Populate videos track
+    videosTrack.innerHTML = videoItems.map((item, index) =>
+      `<div class="carousel-slide" data-index="${index}" data-type="video" data-src="${item.image_url}">
+         <div class="video-wrapper">
+           <video src="${item.image_url}#t=4.0" preload="metadata" playsinline class="item-img" muted loop onmouseover="this.play()" onmouseout="this.pause()"></video>
+           <div class="play-icon-overlay"><i class="fas fa-play"></i></div>
+         </div>
+         <div class="slide-title-overlay">${item.title}</div>
+       </div>`
     ).join('');
 
     slides = $$('.carousel-slide');
-    setupCarousel(track);
+    setupCarousel(document.getElementById('images-carousel'), imagesTrack);
+    setupCarousel(document.getElementById('videos-carousel'), videosTrack);
     setupLightbox();
   } catch (err) {
     console.error('Failed to load gallery items:', err);
-    track.innerHTML = '<p style="color: white; padding: 2rem;">Error loading gallery items.</p>';
+    imagesTrack.innerHTML = '<p class="gallery-error-msg">Error loading gallery items.</p>';
+    videosTrack.innerHTML = '<p class="gallery-error-msg">Error loading gallery items.</p>';
   }
 }
 
 let isAnimating = false;
 
-function setupCarousel(track) {
-  const nextBtn = $('.next-btn');
-  const prevBtn = $('.prev-btn');
+function setupCarousel(container, track) {
+  if (!container || !track) return;
+  const nextBtn = container.querySelector('.next-btn');
+  const prevBtn = container.querySelector('.prev-btn');
 
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
