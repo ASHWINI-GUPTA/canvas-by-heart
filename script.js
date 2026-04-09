@@ -28,6 +28,9 @@ async function initDynamicGallery() {
       return;
     }
 
+    // Sort items by order (1 is First)
+    items.sort((a, b) => (a.order || 0) - (b.order || 0));
+
     const imageItems = items.filter(i => i.type !== 'video');
     const videoItems = items.filter(i => i.type === 'video');
 

@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     loginError.textContent = '';
-    
+
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
         token = data.token;
         localStorage.setItem('adminToken', token);
@@ -80,12 +80,15 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderItems(items) {
+    // Sort items by order so it aligns with the UI logic
+    items.sort((a, b) => (a.order || 0) - (b.order || 0)); // Descending order: highest order first
+
     const imagesGrid = document.getElementById('images-grid');
     const videosGrid = document.getElementById('videos-grid');
-    
+
     imagesGrid.innerHTML = '';
     videosGrid.innerHTML = '';
-    
+
     if (items.length === 0) {
       imagesGrid.innerHTML = '<p>No images found. Upload one to get started!</p>';
       videosGrid.innerHTML = '<p>No videos found.</p>';
@@ -105,20 +108,28 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="play-icon-overlay" style="top: 50%; left: 50%; transform: translate(-50%, -50%);"><i class="fas fa-play"></i></div>
           </div>` : `<img src="${item.image_url}" alt="${item.title}" class="item-img" loading="lazy">`}
         <div class="item-info">
-          <h4 class="item-title">${item.title}</h4>
+          <h4 class="item-title">${item.title} <small style="opacity: 0.7; font-weight: normal; font-size: 0.8em;">(Order: ${item.order || 0})</small></h4>
         </div>
-        <div class="item-actions">
-          <button class="edit-btn" data-id="${item.id}" data-title="${item.title}"><i class="fas fa-edit"></i> Edit</button>
+        <div class="item-edit-form" id="edit-form-${item.id}" style="padding: 1rem; border-top: 1px solid var(--border); display: none; flex-direction: column; gap: 0.5rem;">
+          <input type="text" id="edit-title-${item.id}" value="${item.title}" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Title" />
+          <input type="number" id="edit-order-${item.id}" value="${item.order || 0}" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;" placeholder="Sort Order" />
+          <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+            <button class="save-edit-btn cta primary" data-id="${item.id}" style="flex: 1; padding: 0.5rem; border: none; cursor: pointer; border-radius: 4px; border: 2px solid var(--accent); background: var(--accent); color: white;">Save</button>
+            <button class="cancel-edit-btn cta secondary" data-id="${item.id}" style="flex: 1; padding: 0.5rem; border: none; cursor: pointer; border-radius: 4px; background: transparent; color: var(--accent3); border: 2px solid var(--accent3);">Cancel</button>
+          </div>
+        </div>
+        <div class="item-actions" id="actions-${item.id}">
+          <button class="edit-btn" data-id="${item.id}" data-title="${item.title}" data-order="${item.order || 0}"><i class="fas fa-edit"></i> Edit</button>
           <button class="delete-btn" data-id="${item.id}"><i class="fas fa-trash"></i> Delete</button>
         </div>
       `;
-      
+
       if (item.type === 'video') {
-         videosGrid.appendChild(card);
-         hasVideos = true;
+        videosGrid.appendChild(card);
+        hasVideos = true;
       } else {
-         imagesGrid.appendChild(card);
-         hasImages = true;
+        imagesGrid.appendChild(card);
+        hasImages = true;
       }
     });
 
@@ -129,21 +140,44 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.delete-btn').forEach(btn => {
       btn.addEventListener('click', handleDelete);
     });
+
+    // Toggle edit forms
     document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', handleEdit);
+      btn.addEventListener('click', (e) => {
+        const id = e.target.closest('.edit-btn').getAttribute('data-id');
+        document.getElementById(`edit-form-${id}`).style.display = 'flex';
+        document.getElementById(`actions-${id}`).style.display = 'none';
+      });
+    });
+
+    document.querySelectorAll('.cancel-edit-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = e.target.closest('.cancel-edit-btn').getAttribute('data-id');
+        document.getElementById(`edit-form-${id}`).style.display = 'none';
+        document.getElementById(`actions-${id}`).style.display = 'flex';
+      });
+    });
+
+    document.querySelectorAll('.save-edit-btn').forEach(btn => {
+      btn.addEventListener('click', handleSaveEdit);
     });
   }
 
-  // Handle Edit
-  async function handleEdit(e) {
-    const btn = e.target.closest('.edit-btn');
+  // Handle Edit Save
+  async function handleSaveEdit(e) {
+    const btn = e.target.closest('.save-edit-btn');
     const id = btn.getAttribute('data-id');
-    const currentTitle = btn.getAttribute('data-title');
-    
-    const newTitle = prompt('Enter new title:', currentTitle);
-    if (!newTitle || newTitle === currentTitle) return;
+
+    const newTitle = document.getElementById(`edit-title-${id}`).value.trim();
+    const newOrderStr = document.getElementById(`edit-order-${id}`).value.trim();
+
+    if (!newTitle) {
+      alert('Title is required');
+      return;
+    }
 
     btn.disabled = true;
+    const originalText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
 
     try {
@@ -153,21 +187,24 @@ document.addEventListener('DOMContentLoaded', () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ title: newTitle })
+        body: JSON.stringify({ title: newTitle, order: parseInt(newOrderStr, 10) || 0 })
       });
 
       if (res.ok) {
         fetchItems();
+      } else if (res.status === 401) {
+        alert('Session expired or invalid token. Please log in again.');
+        logoutBtn.click();
       } else {
         const data = await res.json();
         alert('Failed to update: ' + (data.error || 'Unknown error'));
         btn.disabled = false;
-        btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+        btn.innerHTML = 'Save';
       }
     } catch (err) {
       alert('Network error');
       btn.disabled = false;
-      btn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+      btn.innerHTML = 'Save';
     }
   }
 
@@ -175,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function handleDelete(e) {
     const btn = e.target.closest('.delete-btn');
     const id = btn.getAttribute('data-id');
-    
+
     if (!confirm('Are you sure you want to delete this item?')) return;
 
     btn.disabled = true;
@@ -191,6 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (res.ok) {
         fetchItems();
+      } else if (res.status === 401) {
+        alert('Session expired or invalid token. Please log in again.');
+        logoutBtn.click();
       } else {
         const data = await res.json();
         alert('Failed to delete: ' + (data.error || 'Unknown error'));
@@ -207,15 +247,19 @@ document.addEventListener('DOMContentLoaded', () => {
   // Handle Upload
   uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
+
     const titleInput = document.getElementById('art-title');
     const imageInput = document.getElementById('art-image');
-    
+    const orderInput = document.getElementById('art-order');
+
     if (!imageInput.files[0]) return;
 
     const formData = new FormData();
     formData.append('title', titleInput.value);
     formData.append('image', imageInput.files[0]);
+    if (orderInput && orderInput.value) {
+      formData.append('order', orderInput.value);
+    }
 
     uploadBtn.disabled = true;
     uploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
@@ -232,6 +276,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (res.ok) {
         uploadForm.reset();
         fetchItems();
+      } else if (res.status === 401) {
+        alert('Session expired or invalid token. Please log in again.');
+        logoutBtn.click();
       } else {
         const data = await res.json();
         alert('Upload failed: ' + (data.error || 'Unknown error'));
@@ -261,10 +308,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       const data = await res.json();
-      
+
       if (res.ok) {
         alert(`Sync complete! Added ${data.added} new item(s).`);
         fetchItems();
+      } else if (res.status === 401) {
+        alert('Session expired or invalid token. Please log in again.');
+        logoutBtn.click();
       } else {
         alert('Sync failed: ' + (data.error || 'Unknown error'));
       }

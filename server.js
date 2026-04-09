@@ -124,15 +124,16 @@ app.post('/api/items', authenticate, upload.single('image'), async (req, res) =>
       : `https://pub-${process.env.R2_ACCOUNT_ID}.r2.dev/${filename}`;
 
     const title = req.body.title || 'Untitled';
+    const order = parseInt(req.body.order, 10) || 0;
     
     // Insert to Supabase
     const { error: dbError } = await supabase
       .from('gallery_media')
-      .insert([{ id, title, image_url: publicUrl, type, status: 'active' }]);
+      .insert([{ id, title, image_url: publicUrl, type, status: 'active', order }]);
 
     if (dbError) throw dbError;
 
-    res.json({ success: true, id, title, image_url: publicUrl, type });
+    res.json({ success: true, id, title, image_url: publicUrl, type, order });
   } catch (error) {
     console.error('Upload Error:', error);
     res.status(500).json({ error: error.message });
@@ -182,12 +183,17 @@ app.delete('/api/items/:id', authenticate, async (req, res) => {
 app.put('/api/items/:id', authenticate, async (req, res) => {
   try {
     const id = req.params.id;
-    const { title } = req.body;
+    const { title, order } = req.body;
     if (!title) return res.status(400).json({ error: 'Title is required' });
+
+    const updateData = { title };
+    if (order !== undefined) {
+      updateData.order = parseInt(order, 10) || 0;
+    }
 
     const { data, error: updateErr } = await supabase
       .from('gallery_media')
-      .update({ title })
+      .update(updateData)
       .eq('id', id)
       .eq('status', 'active')
       .select();
@@ -195,7 +201,7 @@ app.put('/api/items/:id', authenticate, async (req, res) => {
     if (updateErr) throw updateErr;
     if (!data || data.length === 0) return res.status(404).json({ error: 'Item not found' });
 
-    res.json({ success: true, id, title });
+    res.json({ success: true, id, ...updateData });
   } catch (error) {
     console.error('Update error:', error);
     res.status(500).json({ error: error.message });

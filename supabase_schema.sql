@@ -53,3 +53,10 @@ CREATE TRIGGER update_gallery_media_modtime
     BEFORE UPDATE ON public.gallery_media
     FOR EACH ROW
     EXECUTE FUNCTION update_modified_column();
+
+ALTER TABLE public.gallery_media
+ADD COLUMN "order" INTEGER NOT NULL DEFAULT 0;
+
+
+CREATE INDEX idx_gallery_media_order
+ON public.gallery_media ("order");
